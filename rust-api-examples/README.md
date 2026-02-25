@@ -43,7 +43,7 @@ otool -l target/debug/examples/version | grep -A2 LC_RPATH
 ```
 to check the RPATH.
 
-### Example 2: ASR with streaming zipformer
+### Example 2: ASR with streaming zipformer (with a file)
 
 ```bash
 wget https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-en-2023-06-21.tar.bz2
@@ -51,7 +51,58 @@ wget https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-o
 tar xvf sherpa-onnx-streaming-zipformer-en-2023-06-21.tar.bz2
 rm sherpa-onnx-streaming-zipformer-en-2023-06-21.tar.bz2
 
-cargo run --example streaming_zipformer
+cargo run --example streaming_zipformer -- \
+    --wav sherpa-onnx-streaming-zipformer-en-2023-06-21/test_wavs/1.wav \
+    --encoder sherpa-onnx-streaming-zipformer-en-2023-06-21/encoder-epoch-99-avg-1.int8.onnx \
+    --decoder sherpa-onnx-streaming-zipformer-en-2023-06-21/decoder-epoch-99-avg-1.onnx \
+    --joiner sherpa-onnx-streaming-zipformer-en-2023-06-21/joiner-epoch-99-avg-1.int8.onnx \
+    --tokens sherpa-onnx-streaming-zipformer-en-2023-06-21/tokens.txt \
+    --provider cpu \
+    --debug
+```
+
+### Example 3: ASR with streaming zipformer (with a microphone, real-time ASR)
+
+```bash
+wget https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20.tar.bz2
+tar xvf sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20.tar.bz2
+rm sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20.tar.bz2
+
+cargo run --example streaming_zipformer_microphone --features mic -- \
+    --encoder sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/encoder-epoch-99-avg-1.int8.onnx \
+    --decoder sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/decoder-epoch-99-avg-1.onnx \
+    --joiner sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/joiner-epoch-99-avg-1.int8.onnx \
+    --tokens sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20/tokens.txt \
+    --provider cpu \
+    --debug
+```
+
+### Example 4: ASR with non-streaming SenseVoice
+
+```bash
+wget https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2
+
+tar xvf sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2
+rm sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17.tar.bz2
+ls -lh sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17
+
+cargo run --example sense_voice -- \
+    --wav ./sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17/test_wavs/en.wav \
+    --model ./sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17/model.int8.onnx \
+    --tokens ./sherpa-onnx-sense-voice-zh-en-ja-ko-yue-int8-2024-07-17/tokens.txt
+```
+
+### Example 5: Remove silences from a file using SileroVAD
+
+```bash
+
+curl -SL -O https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/silero_vad.onnx
+curl -SL -O https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/lei-jun-test.wav
+
+cargo run --example silero_vad_remove_silence -- \
+    --input ./lei-jun-test.wav \
+    --output ./no-silence.wav \
+    --silero-vad-model ./silero_vad.onnx
 ```
 
 # Alternative rust bindings for sherpa-onnx

@@ -2,15 +2,15 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
-use std::os::raw::{c_char, c_int};
+use std::os::raw::c_char;
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct SherpaOnnxWave {
     /// Samples normalized to [-1, 1]
     pub samples: *const f32,
-    pub sample_rate: c_int,
-    pub num_samples: c_int,
+    pub sample_rate: i32,
+    pub num_samples: i32,
 }
 
 extern "C" {
@@ -19,4 +19,12 @@ extern "C" {
 
     /// Free memory allocated by SherpaOnnxReadWave
     pub fn SherpaOnnxFreeWave(wave: *const SherpaOnnxWave);
+
+    /// Write a WAV file. Returns 1 on success, 0 on failure.
+    pub fn SherpaOnnxWriteWave(
+        samples: *const f32,
+        n: i32,
+        sample_rate: i32,
+        filename: *const c_char,
+    ) -> i32;
 }
